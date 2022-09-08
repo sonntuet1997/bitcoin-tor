@@ -1,0 +1,96 @@
+# This file assists operators in (re-)deploying an obfs4 bridge Docker
+# container.  You need the tool 'docker-compose' to use this file.  You
+# can find it in the Debian package 'docker-compose'.
+#
+# First, you need to create a configuration file, ".env", in the same directory
+# as this file, "docker-compose.yml".  Add the following environment variables
+# to this configuration file.  EMAIL is your email address; OR_PORT is your
+# onion routing port; and PT_PORT is your obfs4 port:
+#
+#   EMAIL=you@example.com
+#   OR_PORT=XXX
+#   PT_PORT=XXX
+#
+# If needed, you can also activate there an additional variables processing with:
+#
+#   OBFS4_ENABLE_ADDITIONAL_VARIABLES=1
+#
+# followed by defining desired torrc entries prefixed with OBFS4V_
+# For example:
+#
+#   OBFS4V_AddressDisableIPv6=1
+#
+# Next, pull the Docker image, by running:
+#
+#   docker-compose pull obfs4-bridge
+#
+# And finally, to (re-)deploy the container, run:
+#
+#   docker-compose up -d obfs4-bridge
+
+version: "3.4"
+services:
+  node1:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -proxy=10.7.1.11:9050 -regtest -server -addnode=10.7.0.12:12345 -addnode=10.7.0.13:12345 -addnode=10.7.0.14:12345 -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.11
+  node2:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -regtest -server -addnode=10.7.0.11:12345 -addnode=10.7.0.13:12345 -addnode=10.7.0.14:12345 -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.12
+  node3:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -regtest -server -addnode=10.7.0.12:12345 -addnode=10.7.0.11:12345 -addnode=10.7.0.14:12345 -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.13
+  node4:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -regtest -server -addnode=10.7.0.11:12345 -addnode=10.7.0.13:12345 -addnode=10.7.0.12:12345 -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.14
+
+  obfs4-bridge:
+    image: thetorproject/obfs4-bridge:latest
+    environment:
+      # Exit with an error message if OR_PORT is unset or empty.
+      - OR_PORT=${OR_PORT:?Env var OR_PORT is not set.}
+      # Exit with an error message if PT_PORT is unset or empty.
+      - PT_PORT=${PT_PORT:?Env var PT_PORT is not set.}
+      # Exit with an error message if EMAIL is unset or empty.
+      - EMAIL=${EMAIL:?Env var EMAIL is not set.}
+      # Nickname with default value: "DockerObfs4Bridge"
+      - NICKNAME=${NICKNAME:-DockerObfs4Bridge}
+    env_file:
+      - .env
+    volumes:
+      - data:/var/lib/tor
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.1.11
+    #    ports:
+#      - ${OR_PORT}:${OR_PORT}
+#      - ${PT_PORT}:${PT_PORT}
+    restart: unless-stopped
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.7.0.0/16
+volumes:
+  data:
+    name: tor-datadir

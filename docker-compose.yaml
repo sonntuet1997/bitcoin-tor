@@ -1,0 +1,78 @@
+version: "3.4"
+services:
+  #  node1:
+  #    build: .
+  #    cap_add:
+  #      - ALL
+  #    command: bitcoind -proxy=10.7.2.11:9050
+  #    networks:
+  #      vpcbr:
+  #        ipv4_address: 10.7.0.11
+  node1:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -proxy=10.7.2.11:9050 -externalip=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion -listen -regtest -server -addnode=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion:12345 -addnode=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345 -addnode=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion:12345 -addnode=serveaambewd4rco2cgognywfdgm5gx5rr6kegv6mpoelqcibeheqwad.onion:12345      -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.11
+  node2:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -proxy=10.7.2.11:9050 -externalip=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion  -listen -regtest -server -addnode=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion:12345 -addnode=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345 -addnode=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion:12345 -addnode=serveaambewd4rco2cgognywfdgm5gx5rr6kegv6mpoelqcibeheqwad.onion:12345    -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.12
+  node3:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -proxy=10.7.2.11:9050 -externalip=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion  -listen -regtest -server -addnode=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion:12345 -addnode=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345 -addnode=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion:12345 -addnode=serveaambewd4rco2cgognywfdgm5gx5rr6kegv6mpoelqcibeheqwad.onion:12345     -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.13
+  node4:
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -proxy=10.7.2.11:9050 -externalip=serveaambewd4rco2cgognywfdgm5gx5rr6kegv6mpoelqcibeheqwad.onion  -listen -regtest -server -addnode=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion:12345 -addnode=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345 -addnode=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion:12345 -addnode=serveaambewd4rco2cgognywfdgm5gx5rr6kegv6mpoelqcibeheqwad.onion:12345     -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.14
+
+  tor-1:
+    image: goldy/tor-hidden-service:0.3.5.8
+    environment:
+      # hello and again will share the same onion v3 address
+      SERVICE1_TOR_SERVICE_HOSTS: 12345:10.7.0.11:12345
+      SERVICE1_TOR_SERVICE_VERSION: '3'
+      SERVICE2_TOR_SERVICE_HOSTS: 12345:10.7.0.12:12345
+      SERVICE2_TOR_SERVICE_VERSION: '3'
+      SERVICE3_TOR_SERVICE_HOSTS: 12345:10.7.0.13:12345
+      SERVICE3_TOR_SERVICE_VERSION: '3'
+      SERVICE4_TOR_SERVICE_HOSTS: 12345:10.7.0.14:12345
+      SERVICE4_TOR_SERVICE_VERSION: '3'
+      #      SERVICE1_TOR_SERVICE_KEY: |
+      #        PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAACArobDQYyZAWXei4QZwr++
+      #        j96H1X/gq14NwLRZ2O5DXuL0EzYKkdhZSILY85q+kfwZH8z4ceqe7u1F+0pQi/sM
+      SERVICE1_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAAAQK+MjYwAFn0zOJtObK4pE6GsxLqr1ujbOW1A0CmuIbH/4CxbEToD0t7ldT/nxvdruCmlFSqhcsZvXPHsshHVf
+      SERVICE2_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAABQQfUWLvFIE8GYmhqEwHs5Cppxmct5t9poarkDmc/pZqcX9wSgnMQmNvp5cMMZLk0TWOFZeCW14WPPzqCUh7Bj
+      SERVICE3_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAAAw3f57w4U2MRT88/6EIMVjF/kawjtVjCmqRxPHOrl1RJWcGNZid7UpqeY3ZcesSryyiGBt1K9njUMKGFjckx3n
+      SERVICE4_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAABgFOQzQP2PUSkLkFCmAldGauyvp+5dz5I4/lY7yxTkc67d5++KeVCek7GypKF7cmvb3GNLs1878DC0X+2WT5Dv
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.1.11
+    restart: unless-stopped
+  bridge:
+    build: ./tor
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.2.11
+    restart: unless-stopped
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.7.0.0/16

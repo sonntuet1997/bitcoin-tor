@@ -1,0 +1,12 @@
+./autom4te.cache
+./build
+./data
+.env
+aclocal.m4
+Makefile.in
+.idea
+.dockerignore
+Dockerfile
+.gitignore
+docker-compose*.yaml
+cheatsheet.sh
