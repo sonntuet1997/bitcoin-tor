@@ -4,6 +4,10 @@ cat /var/lib/tor/mywebsite/hostname
 
 
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getblockchaininfo
+bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getpeerinfo
+
+
+bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 logging "[\"all\"]" "[\"http\"]"
 
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 createwallet user1
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getnewaddress

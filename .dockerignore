@@ -10,3 +10,4 @@ Dockerfile
 .gitignore
 docker-compose*.yaml
 cheatsheet.sh
+scenario

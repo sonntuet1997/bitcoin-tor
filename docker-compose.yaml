@@ -1,14 +1,7 @@
 version: "3.4"
 services:
-  #  node1:
-  #    build: .
-  #    cap_add:
-  #      - ALL
-  #    command: bitcoind -proxy=10.7.2.11:9050
-  #    networks:
-  #      vpcbr:
-  #        ipv4_address: 10.7.0.11
   node1:
+    image: sonntuet1997/bitcoind:origin
     build: .
     cap_add:
       - ALL
@@ -16,7 +9,10 @@ services:
     networks:
       vpcbr:
         ipv4_address: 10.7.0.11
+    ports:
+      - "44444:22"
   node2:
+    image: sonntuet1997/bitcoind:origin
     build: .
     cap_add:
       - ALL
@@ -25,6 +21,7 @@ services:
       vpcbr:
         ipv4_address: 10.7.0.12
   node3:
+    image: sonntuet1997/bitcoind:origin
     build: .
     cap_add:
       - ALL
@@ -33,6 +30,7 @@ services:
       vpcbr:
         ipv4_address: 10.7.0.13
   node4:
+    image: sonntuet1997/bitcoind:origin
     build: .
     cap_add:
       - ALL
@@ -53,6 +51,8 @@ services:
       SERVICE3_TOR_SERVICE_VERSION: '3'
       SERVICE4_TOR_SERVICE_HOSTS: 12345:10.7.0.14:12345
       SERVICE4_TOR_SERVICE_VERSION: '3'
+      SERVICE5_TOR_SERVICE_HOSTS: 12345:10.8.0.10:12345
+      SERVICE5_TOR_SERVICE_VERSION: '3'
       #      SERVICE1_TOR_SERVICE_KEY: |
       #        PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAACArobDQYyZAWXei4QZwr++
       #        j96H1X/gq14NwLRZ2O5DXuL0EzYKkdhZSILY85q+kfwZH8z4ceqe7u1F+0pQi/sM
@@ -60,16 +60,20 @@ services:
       SERVICE2_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAABQQfUWLvFIE8GYmhqEwHs5Cppxmct5t9poarkDmc/pZqcX9wSgnMQmNvp5cMMZLk0TWOFZeCW14WPPzqCUh7Bj
       SERVICE3_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAAAw3f57w4U2MRT88/6EIMVjF/kawjtVjCmqRxPHOrl1RJWcGNZid7UpqeY3ZcesSryyiGBt1K9njUMKGFjckx3n
       SERVICE4_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAABgFOQzQP2PUSkLkFCmAldGauyvp+5dz5I4/lY7yxTkc67d5++KeVCek7GypKF7cmvb3GNLs1878DC0X+2WT5Dv
+      SERVICE5_TOR_SERVICE_KEY: PT0gZWQyNTUxOXYxLXNlY3JldDogdHlwZTAgPT0AAACoO5jlOW3mWYiTexlwrEaYrs+tRWREiF6hJq9WvoLwaD+1rJjJHULjPn5e0tPtaGkUHHPwATCCqg63t/Ae3SXt
     networks:
       vpcbr:
         ipv4_address: 10.7.1.11
     restart: unless-stopped
   bridge:
+    image: sonntuet1997/tor:relay
     build: ./tor
     networks:
       vpcbr:
         ipv4_address: 10.7.2.11
     restart: unless-stopped
+    ports:
+      - "9050:9050"
 networks:
   vpcbr:
     driver: bridge

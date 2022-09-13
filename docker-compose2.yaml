@@ -62,28 +62,12 @@ services:
     networks:
       vpcbr:
         ipv4_address: 10.7.0.14
-
-  obfs4-bridge:
-    image: thetorproject/obfs4-bridge:latest
-    environment:
-      # Exit with an error message if OR_PORT is unset or empty.
-      - OR_PORT=${OR_PORT:?Env var OR_PORT is not set.}
-      # Exit with an error message if PT_PORT is unset or empty.
-      - PT_PORT=${PT_PORT:?Env var PT_PORT is not set.}
-      # Exit with an error message if EMAIL is unset or empty.
-      - EMAIL=${EMAIL:?Env var EMAIL is not set.}
-      # Nickname with default value: "DockerObfs4Bridge"
-      - NICKNAME=${NICKNAME:-DockerObfs4Bridge}
-    env_file:
-      - .env
-    volumes:
-      - data:/var/lib/tor
+  bridge:
+    image: sonntuet1997/tor:relay
+    build: ./tor
     networks:
       vpcbr:
-        ipv4_address: 10.7.1.11
-    #    ports:
-#      - ${OR_PORT}:${OR_PORT}
-#      - ${PT_PORT}:${PT_PORT}
+        ipv4_address: 10.7.2.11
     restart: unless-stopped
 networks:
   vpcbr:
@@ -91,6 +75,3 @@ networks:
     ipam:
       config:
         - subnet: 10.7.0.0/16
-volumes:
-  data:
-    name: tor-datadir
