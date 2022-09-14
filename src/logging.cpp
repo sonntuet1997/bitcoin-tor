@@ -175,6 +175,7 @@ const CLogCategoryDesc LogCategories[] =
     {BCLog::VALIDATION, "validation"},
     {BCLog::I2P, "i2p"},
     {BCLog::IPC, "ipc"},
+    {BCLog::SON, "son"},
 #ifdef DEBUG_LOCKCONTENTION
     {BCLog::LOCK, "lock"},
 #endif
@@ -272,6 +273,8 @@ std::string LogCategoryToStr(BCLog::LogFlags category)
         return "i2p";
     case BCLog::LogFlags::IPC:
         return "ipc";
+    case BCLog::LogFlags::SON:
+        return "son";
 #ifdef DEBUG_LOCKCONTENTION
     case BCLog::LogFlags::LOCK:
         return "lock";
