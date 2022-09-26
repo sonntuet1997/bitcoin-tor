@@ -5,11 +5,15 @@ cat /var/lib/tor/mywebsite/hostname
 
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getblockchaininfo
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getpeerinfo
+./src/bitcoin-cli -regtest getpeerinfo
+./src/bitcoin-cli -testnet getpeerinfo
+./src/bitcoin-cli -regtest getblockchaininfo
 
 
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 logging "[\"all\"]" "[\"http\"]"
 
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 createwallet user1
+bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 loadwallet user1
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getnewaddress
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 -generate 200
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 listaddressgroupings

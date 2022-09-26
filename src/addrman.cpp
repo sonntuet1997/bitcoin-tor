@@ -738,7 +738,7 @@ std::pair<CAddress, NodeSeconds> AddrManImpl::Select_(bool newOnly) const
             const AddrInfo& info{it_found->second};
             // With probability GetChance() * fChanceFactor, return the entry.
             if (insecure_rand.randbits(30) < fChanceFactor * info.GetChance() * (1 << 30)) {
-                LogPrint(BCLog::ADDRMAN, "Selected %s from tried\n", info.ToString());
+//                LogPrint(BCLog::ADDRMAN, "Selected %s from tried\n", info.ToString());
                 return {info, info.m_last_try};
             }
             // Otherwise start over with a (likely) different bucket, and increased chance factor.
@@ -766,7 +766,7 @@ std::pair<CAddress, NodeSeconds> AddrManImpl::Select_(bool newOnly) const
             const AddrInfo& info{it_found->second};
             // With probability GetChance() * fChanceFactor, return the entry.
             if (insecure_rand.randbits(30) < fChanceFactor * info.GetChance() * (1 << 30)) {
-                LogPrint(BCLog::ADDRMAN, "Selected %s from new\n", info.ToString());
+//                LogPrint(BCLog::ADDRMAN, "Selected %s from new\n", info.ToString());
                 return {info, info.m_last_try};
             }
             // Otherwise start over with a (likely) different bucket, and increased chance factor.
@@ -1131,6 +1131,9 @@ std::vector<CAddress> AddrManImpl::GetAddr(size_t max_addresses, size_t max_pct,
     LOCK(cs);
     Check();
     const auto addresses = GetAddr_(max_addresses, max_pct, network);
+    for (const auto& val : addresses) {
+        LogPrint(BCLog::SON,"%s\n", val.ToString());
+    }
     Check();
     return addresses;
 }
