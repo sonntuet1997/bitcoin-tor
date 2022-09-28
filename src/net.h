@@ -844,6 +844,10 @@ public:
     //! response true if the limit for serving historical blocks has been reached
     bool OutboundTargetReached(bool historicalBlockServingLimit) const EXCLUSIVE_LOCKS_REQUIRED(!m_total_bytes_sent_mutex);
 
+    //! Used to convey which local services we are offering peers during node
+    //! connection.
+    CNode* FindNode(const std::string& addrName);
+
     //! response the bytes left in the current max outbound cycle
     //! in case of no limit, it will always response 0
     uint64_t GetOutboundTargetBytesLeft() const EXCLUSIVE_LOCKS_REQUIRED(!m_total_bytes_sent_mutex);
@@ -862,6 +866,7 @@ public:
 
     /** Return true if we should disconnect the peer for failing an inactivity check. */
     bool ShouldRunInactivityChecks(const CNode& node, std::chrono::seconds now) const;
+
 
 private:
     struct ListenSocket {
@@ -945,7 +950,6 @@ private:
 
     CNode* FindNode(const CNetAddr& ip);
     CNode* FindNode(const CSubNet& subNet);
-    CNode* FindNode(const std::string& addrName);
     CNode* FindNode(const CService& addr);
 
     /**

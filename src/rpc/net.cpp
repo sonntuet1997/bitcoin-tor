@@ -32,6 +32,7 @@
 #include <optional>
 
 #include <univalue.h>
+#include "netmessagemaker.h"
 
 using node::NodeContext;
 
@@ -178,7 +179,6 @@ static RPCHelpMan getpeerinfo()
 
     std::vector<CNodeStats> vstats;
     connman.GetNodeStats(vstats);
-
     UniValue ret(UniValue::VARR);
 
     for (const CNodeStats& stats : vstats) {
@@ -966,6 +966,60 @@ static RPCHelpMan addpeeraddress()
     };
 }
 
+static RPCHelpMan sendaddrmessage()
+{
+    return RPCHelpMan{"sendaddrmessage",
+                      "\nSome description\n",
+                      {{"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The IP address of the peer"}},
+                      RPCResult{RPCResult::Type::NONE, "", ""},
+                      RPCExamples{
+                              HelpExampleCli("sendaddrmessage", "\"1.2.3.4\" 8333 true")
+                      },
+                      [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+                      {
+                          NodeContext& node = EnsureAnyNodeContext(request.context);
+                          PeerManager& peerman = EnsurePeerman(node);
+//                          node.addrman.
+                          // Request that each node send a ping during next message processing pass
+                          peerman.SendPings();
+                          return UniValue::VNULL;
+                      },
+    };
+}
+static RPCHelpMan sendgetaddrmessage()
+{
+    return RPCHelpMan{"sendgetaddrmessage",
+                      "\nSome description\n",
+                      {{"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The IP address of the peer"}},
+                      RPCResult{RPCResult::Type::NONE, "", ""},
+                      RPCExamples{
+                              HelpExampleCli("sendaddrmessage", "\"1.2.3.4\" 8333 true")
+                      },
+                      [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+                      {
+                          NodeContext& node = EnsureAnyNodeContext(request.context);
+                          PeerManager& peerman = EnsurePeerman(node);
+                          CConnman& connman = EnsureConnman(node);
+
+                          const UniValue &address_arg = request.params[0];
+                          CNode* pnode;
+                          if (!address_arg.isNull()) {
+                              pnode = connman.FindNode(address_arg.get_str());
+                              if (!pnode) {
+                                  throw JSONRPCError(RPC_CLIENT_NODE_NOT_CONNECTED, "Node not found in connected nodes");
+                              }
+                          } else {
+                              throw JSONRPCError(RPC_INVALID_PARAMS, "Only one of address and nodeid should be provided.");
+                          }
+                          connman.PushMessage(pnode, CNetMsgMaker(pnode->GetCommonVersion()).Make(NetMsgType::GETADDR));
+
+//                          node.addrman.
+                          // Request that each node send a ping during next message processing pass
+                          return UniValue::VNULL;
+                      },
+    };
+}
+
 void RegisterNetRPCCommands(CRPCTable& t)
 {
     static const CRPCCommand commands[]{
@@ -984,6 +1038,8 @@ void RegisterNetRPCCommands(CRPCTable& t)
         {"network", &getnodeaddresses},
         {"hidden", &addconnection},
         {"hidden", &addpeeraddress},
+            {"hidden", &sendaddrmessage},
+            {"hidden", &sendgetaddrmessage},
     };
     for (const auto& c : commands) {
         t.appendCommand(c.name, &c);
