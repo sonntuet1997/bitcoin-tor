@@ -9,20 +9,37 @@ bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -rpcport=10340 getpeerinfo
 ./src/bitcoin-cli -regtest getnetworkinfo
 ./src/bitcoin-cli -regtest getaddednodeinfo
 ./src/bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x getnodeaddresses 0
-./src/bitcoin-cli -regtest getnodeaddresses 0
-./src/bitcoin-cli -regtest sendaddrmessage
-./src/bitcoin-cli -regtest addpeeraddress "servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion" 12345 true
-./src/bitcoin-cli -regtest addpeeraddress "servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion" 12345 true
-./src/bitcoin-cli -regtest addpeeraddress "servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion" 12345 true
+./src/bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x  addpeeraddress "servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion" 12345 true
 ./src/bitcoin-cli -regtest addpeeraddress "123.123.123.123" 12345 true
-./src/bitcoin-cli -regtest sendgetaddrmessage servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345
+
+
+./src/bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -named \
+  sendgetaddrmessage \
+  nodeip=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345
+
 ./src/bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -named \
   sendaddrmessage \
   nodeip="servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345" \
   address="123.123.123.123" \
   port=12345
 
+./src/bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -named \
+  sendaddrseedmessage \
+  nodeip="servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345" \
+  quantity=200
+
+
 ./src/bitcoin-cli -testnet getpeerinfo
+
+for n in {1..100};
+do
+    ./src/bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x -named \
+      sendaddrmessage \
+      nodeip="servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion:12345" \
+      address="123.123.123.$n" \
+      port=12345
+done
+
 
 bitcoin-cli -regtest -rpcuser=rpc -rpcpassword=x logging "[\"all\"]" "[\"http\"]"
 

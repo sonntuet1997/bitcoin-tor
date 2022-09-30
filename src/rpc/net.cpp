@@ -983,6 +983,58 @@ static RPCHelpMan sendaddrmessage()
         },
     };
 }
+static RPCHelpMan sendaddrseedmessage()
+{
+    return RPCHelpMan{
+        "sendaddrseedmessage",
+        "\nSome description\n",
+        {
+            {"nodeip", RPCArg::Type::STR, RPCArg::Optional::NO, "The IP address of the connected node"},
+            {"quantity", RPCArg::Type::NUM, RPCArg::Default{1}, "The want to renerate"},
+        },
+        RPCResult{RPCResult::Type::NONE, "", ""},
+        RPCExamples{
+            HelpExampleCli("sendaddrmessage", "\"1.2.3.4\" \"1.2.3.4\" 12344")},
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue {
+            NodeContext& node = EnsureAnyNodeContext(request.context);
+            PeerManager& peerman = EnsurePeerman(node);
+            CConnman& connman = EnsureConnman(node);
+
+            const UniValue& address_arg = request.params[0];
+            CNode* pnode;
+            if (!address_arg.isNull()) {
+                pnode = connman.FindNode(address_arg.get_str());
+                if (!pnode) {
+                    throw JSONRPCError(RPC_CLIENT_NODE_NOT_CONNECTED,
+                                       "Node not found in connected nodes");
+                }
+            } else {
+                throw JSONRPCError(RPC_INVALID_PARAMS,
+                                   "Only one of address and nodeid should be provided.");
+            }
+            srand(time(nullptr));
+            const std::string& addr_string{"123.122." + std::to_string((rand() % 254) + 1) + "."};
+            const auto port{12345};
+            const auto quantity{request.params[1].getInt<uint16_t>()};
+            std::vector<CAddress> addresses;
+            const char* msg_type = NetMsgType::ADDRV2;
+            int make_flags = ADDRV2_FORMAT;
+            for (int i = 1; i <= quantity; i++) {
+                UniValue obj(UniValue::VOBJ);
+                CNetAddr net_addr;
+                if (LookupHost(addr_string + std::to_string(i), net_addr, false)) {
+                    CAddress address{{net_addr, port}, ServiceFlags{NODE_NETWORK | NODE_WITNESS}};
+                    address.nTime = Now<NodeSeconds>();
+                    addresses.push_back(address);
+                } else {
+                    throw JSONRPCError(RPC_CLIENT_NODE_ALREADY_ADDED, "Error: unable to lookup");
+                }
+            }
+            connman.PushMessage(pnode, CNetMsgMaker(pnode->GetCommonVersion()).Make(make_flags, msg_type, addresses));
+            return UniValue::VNULL;
+        },
+    };
+}
 
 static RPCHelpMan sendgetaddrmessage()
 {
@@ -1039,6 +1091,7 @@ void RegisterNetRPCCommands(CRPCTable& t)
         {"hidden", &addpeeraddress},
         {"hidden", &sendaddrmessage},
         {"hidden", &sendgetaddrmessage},
+        {"hidden", &sendaddrseedmessage},
     };
     for (const auto& c : commands) {
         t.appendCommand(c.name, &c);
