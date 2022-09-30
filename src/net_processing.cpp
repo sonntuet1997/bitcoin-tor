@@ -4464,10 +4464,10 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
 
         // Only send one GetAddr response per connection to reduce resource waste
         // and discourage addr stamping of INV announcements.
-        if (peer->m_getaddr_recvd) {
-            LogPrint(BCLog::NET, "Ignoring repeated \"getaddr\". peer=%d\n", pfrom.GetId());
-            return;
-        }
+//        if (peer->m_getaddr_recvd) {
+//            LogPrint(BCLog::NET, "Ignoring repeated \"getaddr\". peer=%d\n", pfrom.GetId());
+//            return;
+//        }
         peer->m_getaddr_recvd = true;
 
         peer->m_addrs_to_send.clear();
