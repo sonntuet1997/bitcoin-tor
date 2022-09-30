@@ -5,7 +5,7 @@ services:
     build: .
     cap_add:
       - ALL
-    command: bitcoind -debug=net  -debug=addrman -proxy=10.7.2.11:9050 -externalip=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion -listen -regtest -server  -rpcuser=rpc -rpcpassword=x  --datadir=/root/bitcoind-simnet/ -port=12345
+    command: bitcoind -onlynet=onion -debug=net  -debug=addrman -proxy=10.7.2.11:9050 -externalip=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion -listen -regtest -server  -rpcuser=rpc -rpcpassword=x  --datadir=/root/bitcoind-simnet/ -port=12345
     networks:
       vpcbr:
         ipv4_address: 10.7.0.11
@@ -16,19 +16,19 @@ services:
     build: .
     cap_add:
       - ALL
-    command: bitcoind -debug=net  -debug=addrman -proxy=10.7.2.11:9050 -externalip=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion  -listen -regtest -server -addnode=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion:12345 -rpcuser=rpc -rpcpassword=x --datadir=/root/bitcoind-simnet/ -port=12345
+    command: bitcoind -debug=net  -debug=addrman -proxy=10.7.2.11:9050 -externalip=servjuchjdb2dndkmi3bbacvh7bop4ansnal2nchi7ig6u3hzfqne7yd.onion  -listen -regtest -server -rpcuser=rpc -rpcpassword=x --datadir=/root/bitcoind-simnet/ -port=12345
     networks:
       vpcbr:
         ipv4_address: 10.7.0.12
-#  node3:
-#    image: sonntuet1997/bitcoind:origin
-#    build: .
-#    cap_add:
-#      - ALL
-#    command: bitcoind -debug=net   -debug=addrman -proxy=10.7.2.11:9050 -externalip=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion  -listen -regtest -server -addnode=servivenwug4ekn4hmeutnamtmftrirsucmd3opek7kqql4dwliegjqd.onion:12345 -rpcuser=rpc -rpcpassword=x -rpcport=10340  --datadir=/root/bitcoind-simnet/ -port=12345
-#    networks:
-#      vpcbr:
-#        ipv4_address: 10.7.0.13
+  node3:
+    image: sonntuet1997/bitcoind:origin
+    build: .
+    cap_add:
+      - ALL
+    command: bitcoind -debug=net  -debug=addrman -proxy=10.7.2.11:9050 -externalip=servivotqeinyvd7e5rhrbvykpkdmwksqw7huyzugimwvmvkutvwb6id.onion  -listen -regtest -server -rpcuser=rpc -rpcpassword=x --datadir=/root/bitcoind-simnet/ -port=12345
+    networks:
+      vpcbr:
+        ipv4_address: 10.7.0.13
 #  node4:
 #    image: sonntuet1997/bitcoind:origin
 #    build: .

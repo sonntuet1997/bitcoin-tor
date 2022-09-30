@@ -3533,8 +3533,12 @@ void PeerManagerImpl::ProcessMessage(CNode& pfrom, const std::string& msg_type, 
                 RelayAddress(pfrom.GetId(), addr, fReachable);
             }
             // Do not store addresses outside our network
-            if (fReachable)
+            if (fReachable) {
                 vAddrOk.push_back(addr);
+                LogPrint(BCLog::NET, "Received addr: %u is Ok\n",
+                         addr.ToString());
+
+            }
         }
         peer->m_addr_processed += num_proc;
         peer->m_addr_rate_limited += num_rate_limit;
